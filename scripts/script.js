@@ -1,4 +1,4 @@
-function Game(player1, player2) {
+const Game = (function (player1, player2) {
     let pl1 = player1;
     let pl2 = player2;
     let firstPlayerTurn = true;
@@ -49,7 +49,7 @@ function Game(player1, player2) {
     }
 
     return {gameboard, play, firstPlayerTurn} //Bad
-}
+})(p1, p2)
 
 function makePlayer(name) {
     let score = 0;
@@ -64,7 +64,6 @@ function makePlayer(name) {
 
 const p1 = makePlayer("Mike");
 const p2 = makePlayer("Noah");
-const game1 = Game(p1, p2);
 
 
 const playBtn = document.querySelector("button");
