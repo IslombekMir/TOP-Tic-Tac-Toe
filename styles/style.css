@@ -2,3 +2,84 @@ button {
     background-color: red;
     width: 100px;
 }
+
+
+.playground {
+    padding: 10px;
+    background-color: red;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 2;
+}
+
+.player {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background-color: green;
+    padding: 10px;
+}
+
+.player label {
+    margin-bottom: 10px;
+}
+
+.board-wrapper {
+    margin: 10px auto;
+    background-color: skyblue;
+    padding: 20px;
+    display: inline-block;
+    border-radius: 10px;
+}
+
+.board {
+    background-color: black;
+    margin: 0 auto;
+
+    display: inline-grid;
+    grid-template-columns: repeat(3, 40px);
+    grid-template-rows: repeat(3, 40px);
+    gap: 2px;
+
+    border-radius: 10px;
+}
+
+.old-play-btn {
+    display: none;
+}
+
+.cell {
+    background-color: skyblue;
+    color: white;
+    transition: 0.3s;
+}
+
+.play-btn {
+    grid-area: 2 / 2 / 3 / 3;
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px;
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+}
+
+.play-btn:hover {
+    background-color: blue;
+}
+
+.cell:hover {
+    background-color: rgb(61, 95, 110);
+}
+
+.cell:active {
+    background-color: white;
+    color: rgb(61, 95, 110);
+}
+
+
+#player-score-1, #player-score-2 {
+    background-color: blue;
+    width: 10px;
+    height: 1rem;
+}

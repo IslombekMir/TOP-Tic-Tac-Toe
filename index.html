@@ -8,6 +8,35 @@
     <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <button>Play</button>
+    <button class="old-play-btn">Play</button>
+
+    <div class="playground">
+        <div class="player first">
+            <label for="player-1">Player 1</label>
+            <input type="text" id="player-1">
+            <output id="player-score-1"></output>
+        </div>
+        <div class="board-wrapper">
+            <div class="board">
+                <div class="cell" id="cell-1"></div>
+                <div class="cell" id="cell-2"></div>
+                <div class="cell" id="cell-3"></div>
+                <div class="cell" id="cell-4"></div>
+                <div class="cell" id="cell-5"></div>
+                <div class="cell" id="cell-6"></div>
+                <div class="cell" id="cell-7"></div>
+                <div class="cell" id="cell-8"></div>
+                <div class="cell" id="cell-9"></div>
+            </div>
+        </div>
+        <div class="player 2nd">
+            <label for="player-2">Player 2</label>
+            <input type="text" id="player-2">
+            <output id="player-score-2"></output>
+        </div>
+        <button class="play-btn">Play</button>
+    </div>
+
+    <div class="winner-board"></div>
 </body>
 </html>
