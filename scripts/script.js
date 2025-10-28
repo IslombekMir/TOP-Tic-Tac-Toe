@@ -69,13 +69,15 @@ const Game = (function () {
             domElements.player2Box.style.fontSize = "25px";
             domElements.player1Box.style.border = "none";
             domElements.player2Box.style.border = "2px outset green";
-            domElements.winnerBoard.textContent = `${pl1.name}'s turn`;
+            domElements.winnerBoard.textContent = `${pl2.name}'s turn`;
         }
     }
 
     const play = function(row, col) {
         if (gameboard[row][col] != e) {
             console.log("This cell is taken.")
+            domElements.winnerBoard.textContent = "This cell is taken!";
+            domElements.winnerBoard.style.color = "red";
             return;
         }
         gameboard[row][col] = firstPlayerTurn ? "X" : "O";
@@ -95,9 +97,10 @@ const Game = (function () {
         firstPlayerTurn = true;
         
 
-        domElements.winnerBoard.textContent = `One point to ${winner.name}!`;
+        domElements.board.removeEventListener('click', eventForCells);
         showTurn();
         updateScores();
+        domElements.winnerBoard.textContent = `One point to ${winner.name}!`;
     }
 
     function checkForWin() {
@@ -174,23 +177,22 @@ domElements.oldPlayBtn.addEventListener("click", (e) => {
 
 function enableGame() {
     domElements.board.addEventListener('click', (e) => {
-    const cell = e.target;
+        const cell = e.target;
 
-    [dontNeed, sequence] = cell.id.split("-");
-    let quotient = Math.floor(sequence / 3)
-    let remainder = sequence % 3;
+        [dontNeed, sequence] = cell.id.split("-");
+        let quotient = Math.floor(sequence / 3)
+        let remainder = sequence % 3;
     
-    if (remainder == 0) {
-        remainder = 3;
-        quotient --;
-    }
-    cell.textContent = Game.getFirstPlayerTurn() ? 'X' : 'O';
-    Game.play(quotient, remainder - 1);
-    
-})
+        if (remainder == 0) {
+            remainder = 3;
+            quotient --;
+        }
+        cell.textContent = Game.getFirstPlayerTurn() ? 'X' : 'O';
+        Game.play(quotient, remainder - 1);
+    })
 }
 
-domElements.playBtn.addEventListener('click', (e) => {
+function eventForCells(e) {
     console.log("Play clicked!");
 
     if(domElements.player1.value.trim() == "" | domElements.player2.value.trim() == "") {
@@ -211,5 +213,7 @@ domElements.playBtn.addEventListener('click', (e) => {
 
         e.target.textContent = "New Game";
     }
-})
+}
+
+domElements.playBtn.addEventListener('click', eventForCells);
 
