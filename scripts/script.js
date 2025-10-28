@@ -1,72 +1,75 @@
 const domElements = (function() {
     const oldPlayBtn = document.querySelector(".old-play-btn");
+    const playground = document.querySelector(".playground");
     const board = document.querySelector('.board');
+    const cells = Array.from(board.children);
+    const boardWrapper = document.querySelector(".board-wrapper");
     const winnerBoard = document.querySelector(".winner-board");
     const playBtn = document.querySelector('.play-btn');
     const player1 = document.querySelector('#player-1');
     const player2 = document.querySelector('#player-2');
+    const player1Box = document.querySelector(".first");
+    const player2Box = document.querySelector(".second");
     const playerScore1 = document.querySelector("#player-score-1");
     const playerScore2 = document.querySelector("#player-score-2");
 
-    return {playBtn, board, winnerBoard, oldPlayBtn, player1, player2, playerScore1, playerScore2};
+    return {playBtn, playground, board, cells, boardWrapper, winnerBoard, oldPlayBtn, player1, player2, player1Box, player2Box, playerScore1, playerScore2};
 })();
 
 
 
-const Players = (function () {
-    let pl1, pl2;
-
-    //getters
-    const getPl1 = () => pl1;
-    const getPl2 = () => pl2;
-
-    const addPlayers = function(name1 = "Player 1", name2 = "Player 2") {
-        pl1 = makePlayer(name1);
-        pl2 = makePlayer(name2);
-    }
-    return {getPl1, getPl2, addPlayers}
-})();
-
-function makePlayer(name = "someone") {
+const makePlayer = function(name) {
     let score = 0;
-    const getScore = function () {return score;}
-    const win = function () {
-        score++;
+    const getScore = () => score;
+    const win = () => {
+        score++
         console.log(`${name} wins!`);
-        return `${name} wins!`;
+    };
+    return {
+        name,
+        getScore,
+        win
     }
-    return {name, getScore, win}
 }
 
 
 
-const Game = (function (player1, player2) {
-    let pl1 = player1;
-    let pl2 = player2;
-    let firstPlayerTurn = true;
-    let gameEnded = false;
-
+const Game = (function () {
+    let pl1, pl2, firstPlayerTurn, gameEnded, gameboard;
     //Getters
-    const getFirstPlayerTurn = function() {
-        return firstPlayerTurn;
-    }
-
-    const getGameEnded = function() {
-        return gameEnded;
-    }
+    const getFirstPlayerTurn = () => firstPlayerTurn;
+    const getGameEnded = () => gameEnded;
 
     const start = function() {
+        pl1 = player1;
+        pl2 = player2;
+        firstPlayerTurn = true;
         gameEnded = false;
-    }
+        e = " "; //empty cells
+        gameboard = [[e, e, e], [e, e, e], [e, e, e]];
 
-    //Gameboard
-    e = " "; //empty cells
-    gameboard = [[e, e, e], [e, e, e], [e, e, e]];
+    }
 
     const displayGameboard = function() {
         console.log(!firstPlayerTurn ? `${pl1.name}'s move` : `${pl2.name}` + "'s move:")
         for (let i in gameboard) {
             console.log(gameboard[i]);
+        }
+    }
+
+    const showTurn = function() {
+        if(firstPlayerTurn) {
+            domElements.player1Box.style.fontSize = "25px";
+            domElements.player2Box.style.fontSize = "1rem";
+            domElements.player1Box.style.border = "2px outset green";
+            domElements.player2Box.style.border = "none";
+            domElements.winnerBoard.textContent = `${pl1.name}'s turn`;
+        } else {
+            domElements.player1Box.style.fontSize = "1rem";
+            domElements.player2Box.style.fontSize = "25px";
+            domElements.player1Box.style.border = "none";
+            domElements.player2Box.style.border = "2px outset green";
+            domElements.winnerBoard.textContent = `${pl1.name}'s turn`;
         }
     }
 
@@ -78,8 +81,23 @@ const Game = (function (player1, player2) {
         gameboard[row][col] = firstPlayerTurn ? "X" : "O";
 
         firstPlayerTurn = !firstPlayerTurn;
+        showTurn();
         displayGameboard();
         checkForWin();
+    }
+
+    const afterWin = function() {
+        //gameboard = [[e, e, e], [e, e, e], [e, e, e]];
+        gameEnded = true;
+        //domElements.cells.forEach(cell => cell.textContent = "");
+        domElements.cells.forEach(cell => cell.style.background = "skyblue");
+        winner = !firstPlayerTurn ? pl1 : pl2;
+        firstPlayerTurn = true;
+        
+
+        domElements.winnerBoard.textContent = `One point to ${winner.name}!`;
+        showTurn();
+        updateScores();
     }
 
     function checkForWin() {
@@ -90,7 +108,7 @@ const Game = (function (player1, player2) {
                 str += gameboard[i][j] == check ? "1" : "0";
             }
         }
-        console.log(check, str);
+    
         const winCondtions = 
         [
             [0, 1, 2, '--'], [3, 4, 5, '--'], [6, 7, 8, '--'], 
@@ -116,19 +134,26 @@ const Game = (function (player1, player2) {
                 } else {
                     domElements.winnerBoard.textContent = pl1.win();
                 }
-                firstPlayerTurn = true;
-                gameboard = [[e, e, e], [e, e, e], [e, e, e]];
-                gameEnded = true;
-                console.log("Let there be another game:")
+                
+                let [a, b, c, type] = winCondtions[i];
+                domElements.cells[a].textContent = type;
+                domElements.cells[b].textContent = type;
+                domElements.cells[c].textContent = type;
+                
+                afterWin();
+                console.log("Let there be another game:");
             }
         }
     }
 
-    return {gameboard, play, getFirstPlayerTurn, getGameEnded, start};
-})(Players.pl1, Players.pl2);
+    return {gameboard, play, getFirstPlayerTurn, getGameEnded, start, showTurn};
+})();
 
 
-
+function updateScores() {
+    domElements.playerScore1.textContent = player1.getScore();
+    domElements.playerScore2.textContent = player2.getScore();
+}
 
 
 domElements.oldPlayBtn.addEventListener("click", (e) => {
@@ -147,7 +172,8 @@ domElements.oldPlayBtn.addEventListener("click", (e) => {
     play()
 })
 
-domElements.board.addEventListener('click', (e) => {
+function enableGame() {
+    domElements.board.addEventListener('click', (e) => {
     const cell = e.target;
 
     [dontNeed, sequence] = cell.id.split("-");
@@ -158,19 +184,32 @@ domElements.board.addEventListener('click', (e) => {
         remainder = 3;
         quotient --;
     }
-
-    Game.play(quotient, remainder - 1)
-
-    cell.setAttribute('style', "display: flex; justify-content: center; align-items: center");
-    cell.textContent = Game.getFirstPlayerTurn() ? 'O' : 'X';
-
+    cell.textContent = Game.getFirstPlayerTurn() ? 'X' : 'O';
+    Game.play(quotient, remainder - 1);
+    
 })
+}
 
 domElements.playBtn.addEventListener('click', (e) => {
-    Players.addPlayers(domElements.player1.value, domElements.player2.value);
+    console.log("Play clicked!");
 
-    // domElements.playerScore1.textContent = Players.pl1.getScore();
-    // domElements.playerScore2.textContent = Players.pl2.getScore();
-    console.log('play pressed');
+    if(domElements.player1.value.trim() == "" | domElements.player2.value.trim() == "") {
+        domElements.winnerBoard.textContent = "Enter both names";
+        domElements.winnerBoard.style.color = "red";
+    } else {
+        domElements.boardWrapper.style.background = "var(--main-color)";
+        player1 = makePlayer(domElements.player1.value);
+        player2 = makePlayer(domElements.player2.value);
+
+        domElements.winnerBoard.textContent = "Good Luck!";
+        domElements.winnerBoard.style.color = "white";
+
+        Game.start(player1, player2);
+        Game.showTurn();
+        enableGame();
+        updateScores();
+
+        e.target.textContent = "New Game";
+    }
 })
 
